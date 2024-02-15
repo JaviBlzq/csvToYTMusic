@@ -10,24 +10,21 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 
-scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
+scopes = ["https://www.googleapis.com/auth/youtubepartner","https://www.googleapis.com/auth/youtube","https://www.googleapis.com/auth/youtube.force-ssl"]
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+api_service_name = "youtube"
+api_version = "v3"
+client_secrets_file = "data/client_secret_1071491351317-u9il9g0o7a8gegqpt3816cunpdmubhbk.apps.googleusercontent.com.json"
 
-def main(songToSearch):
-    # Disable OAuthlib's HTTPS verification when running locally.
-    # *DO NOT* leave this option enabled in production.
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+# Get credentials and create an API client
+flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+    client_secrets_file, scopes)
+credentials = flow.run_local_server(port=0)
+youtube = googleapiclient.discovery.build(
+api_service_name, api_version, credentials=credentials)
+DEVELOPER_KEY = "AIzaSyCcBWFuViLXl87k1kEqiUN_HCK3w1TrnSs"
 
-    api_service_name = "youtube"
-    api_version = "v3"
-    client_secrets_file = "data/client_secret_1071491351317-u9il9g0o7a8gegqpt3816cunpdmubhbk.apps.googleusercontent.com.json"
-
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, scopes)
-    credentials = flow.run_local_server(port=0)
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, credentials=credentials)
-
+def getVideoId(songToSearch):
     request = youtube.search().list(
         part="snippet",
         maxResults=1,
@@ -37,3 +34,22 @@ def main(songToSearch):
 
     return response['items'][0]['id']['videoId']
 
+def insertVideo(videoId):
+    youtube = googleapiclient.discovery.build(
+        api_service_name, api_version, credentials=credentials)
+    request = youtube.playlistItems().insert(
+        part="snippet",
+        body={
+            "snippet": {
+                "playlistId": "PLjtL2zME1BQ0uAaIBylnF5ePFn0LWWbkd",
+                "position": 0,
+                "resourceId": {
+                    "kind": "youtube#video",
+                    "videoId": videoId
+                }
+            }
+        }
+    )
+    response = request.execute()
+
+    print(response)

@@ -9,4 +9,5 @@ if __name__ == '__main__':
     song = tracks.loc[1,]
     song = song['Track name']+ ' - ' + song['Artist name']
     print(song)
-    videoId = handlerAPI.main(song)
+    videoId = handlerAPI.getVideoId(song)
+    handlerAPI.insertVideo(videoId)
