@@ -14,7 +14,7 @@ scopes = ["https://www.googleapis.com/auth/youtubepartner","https://www.googleap
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 api_service_name = "youtube"
 api_version = "v3"
-client_secrets_file = "data/client_secret_1071491351317-u9il9g0o7a8gegqpt3816cunpdmubhbk.apps.googleusercontent.com.json"
+client_secrets_file = "data/client_secret_918457832193-iubvnf16j6ue4bucu2o7psf7dm9c8jdk.apps.googleusercontent.com.json"
 
 # Get credentials and create an API client
 flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
@@ -35,21 +35,24 @@ def getVideoId(songToSearch):
     return response['items'][0]['id']['videoId']
 
 def insertVideo(videoId):
-    youtube = googleapiclient.discovery.build(
-        api_service_name, api_version, credentials=credentials)
-    request = youtube.playlistItems().insert(
-        part="snippet",
-        body={
-            "snippet": {
-                "playlistId": "PLjtL2zME1BQ0uAaIBylnF5ePFn0LWWbkd",
-                "position": 0,
-                "resourceId": {
-                    "kind": "youtube#video",
-                    "videoId": videoId
+    try:
+        youtube = googleapiclient.discovery.build(
+            api_service_name, api_version, credentials=credentials)
+        request = youtube.playlistItems().insert(
+            part="snippet",
+            body={
+                "snippet": {
+                    "playlistId": "PLjtL2zME1BQ0uAaIBylnF5ePFn0LWWbkd",
+                    "position": 0,
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": videoId
+                    }
                 }
             }
-        }
-    )
-    response = request.execute()
+        )
+        response = request.execute()
 
-    print(response)
+        print("Added Successfully")
+    except:
+        print("Error")
