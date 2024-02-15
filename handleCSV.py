@@ -7,6 +7,7 @@ def clean_df(df):
 
 def df_tracks(csv_file):
     df = pd.read_csv(csv_file)
+    print(df.head())
     return clean_df(df)
 
 
